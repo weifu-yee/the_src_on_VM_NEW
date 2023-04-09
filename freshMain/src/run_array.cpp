@@ -4,12 +4,24 @@
 
 #include "odometry.h"
 #include "mecanum.h"
+#include <cstdlib>
 
-double speed_Kp, des_x, des_y, des_theta;
+#define numOfPoints 12
+
+double speed_Kp = 3, des_x, des_y, des_theta;
 double des_x_last = -1, des_y_last = -1, des_theta_last = -1;
+size_t current_index = 0;
 
 Odometry odometry;
 Mecanum mecanum;
+
+void clearScreen() {
+#ifdef _WIN32
+    std::system("cls");
+#else
+    std::system("clear");
+#endif
+}
 
 void Callback(const geometry_msgs::Twist::ConstPtr& ins_vel){
     mecanum.odometry.update(ins_vel);
@@ -21,20 +33,21 @@ int main(int argc, char **argv){
     ros::Publisher vel_pub = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 1);
     // ros::Subscriber pose_sub = nh.subscribe("/ins_vel",1,Callback);
     ros::Subscriber fake_odometry = nh.subscribe("/cmd_vel",1,Callback);
-
-    ros::Rate r(10);
     
     while(ros::ok()){
-        readPath(&des_x, &des_y, &des_theta);
-        std::cout<<des_x<<"\t"<<des_y<<"\t"<<des_theta<<"\n";
+        if(readPath(&des_x, &des_y, &des_theta, current_index))     break;
+        std::cout<<"("<<des_x<<"\t"<<des_y<<"\t"<<des_theta<<")\n";
+        std::cout<<current_index<<"\n";
+        if(current_index > numOfPoints)  break;
         if(des_x_last != des_x || des_y_last != des_y || des_theta_last != des_theta){
             while(!mecanum.if_reach && ros::ok()){
                 ros::spinOnce();
-                std::cout<<mecanum.odometry.x;
                 vel_pub.publish( mecanum.goTo(des_x, des_y, des_theta, speed_Kp) );
             }
             mecanum.if_reach = false;
-            std::cout<<"\n\t\tarrive the destanation!\n\n";
+            std::cout<<"\n\t\tarrive the ("<<current_index<<" th) destanation!\n\n";
+            ros::Duration(1.0).sleep(); // Sleep for 1 second
+            clearScreen();
         }
         des_x_last = des_x;
         des_y_last = des_y;

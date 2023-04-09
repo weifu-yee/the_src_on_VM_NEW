@@ -8,6 +8,7 @@
 #include <fstream>
 #include <vector>
 #include <yaml-cpp/yaml.h>
+#include <iomanip>
 
 #define allowance 10e-3
 class Mecanum{
@@ -30,22 +31,13 @@ public:
         speed.angular.z = (std::abs(diff_theta) > allowance)?std::abs(speed_Kp) * diff_theta:0;
         if(std::abs(diff_x) <= allowance && std::abs(diff_y) <= allowance && std::abs(diff_theta) <= allowance)    if_reach = true;
         
-        std::cout
-        <<"x:( "
-        <<des_x<<" "
-        <<odometry.x<<" "
-        <<speed.linear.x<<" )\t"
-        <<"y:( "
-        <<des_y<<" "
-        <<odometry.y<<" "
-        <<speed.linear.y<<" )\t"
-        <<"theta:( "
-        <<des_theta<<" "
-        <<odometry.theta<<" "
-        <<speed.angular.z<<" )\n";
+        std::cout<<std::fixed<<std::setprecision(4);
+        std::cout<<"des("<<des_x<<","<<des_y<<","<<des_theta<<")\t";
+        std::cout<<"odo("<<odometry.x<<","<<odometry.y<<","<<odometry.theta<<")\t";
+        std::cout<<"vel("<<speed.linear.x<<","<<speed.linear.y<<","<<speed.angular.z<<")\n";
 
         return speed;
     }
 };
-int readPath(double* des_x_Ptr, double* des_y_Ptr, double* des_theta_Ptr);
+int readPath(double* des_x_Ptr, double* des_y_Ptr, double* des_theta_Ptr, size_t& current_index);
 #endif
