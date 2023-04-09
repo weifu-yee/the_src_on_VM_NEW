@@ -150,11 +150,12 @@ include_directories(
 ## same as for the library above
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
+add_library(meca src/mecanum.cpp)
 add_executable(run src/run.cpp)
 target_link_libraries(run ${catkin_LIBRARIES} yaml-cpp)
 add_dependencies(run ${catkin_EXPORTED_TARGETS})
 add_executable(run_array src/run_array.cpp src/mecanum.cpp)
-target_link_libraries(run_array ${catkin_LIBRARIES} yaml-cpp)
+target_link_libraries(run_array ${catkin_LIBRARIES} yaml-cpp meca)
 add_dependencies(run_array ${catkin_EXPORTED_TARGETS})
 # add_executable(mecanum src/mecanum.cpp)
 # target_link_libraries(mecanum ${catkin_LIBRARIES})
