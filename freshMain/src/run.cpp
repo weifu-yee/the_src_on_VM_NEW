@@ -5,17 +5,12 @@
 #include "odometry.h"
 #include "mecanum.h"
 
-// #define PI 3.1415926
-// #define allowance 10e-3
-
-// Global variables to store position and orientation
 double speed_Kp, des_x, des_y, des_theta;
 double des_x_last = -1, des_y_last = -1, des_theta_last = -1;
 
 Odometry odometry;
 Mecanum mecanum;
 
-// Callback function to update position and orientation
 void Callback(const geometry_msgs::Twist::ConstPtr& ins_vel){
     mecanum.odometry.update(ins_vel);
 }
@@ -28,7 +23,7 @@ int main(int argc, char **argv){
     ros::Subscriber fake_odometry = nh.subscribe("/cmd_vel",1,Callback);
 
     ros::Rate r(10);
-    // Main loop to continuously check and update target position and orientation
+    
     while(ros::ok()){
         nh.getParam("/speed",speed_Kp);
         nh.getParam("/des_x",des_x);
