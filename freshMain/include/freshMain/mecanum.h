@@ -4,6 +4,10 @@
 #include "ros/ros.h"
 #include "geometry_msgs/Twist.h"
 #include "odometry.h"
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <yaml-cpp/yaml.h>
 
 #define allowance 10e-3
 class Mecanum{
@@ -43,6 +47,5 @@ public:
         return speed;
     }
 };
-
-void readPath(std::string yaml_path);
+int readPath(double* des_x_Ptr, double* des_y_Ptr, double* des_theta_Ptr);
 #endif
