@@ -2,6 +2,7 @@
 #include "iostream"
 #include "sys/time.h"
 
+#include "odometry.h"
 #include "mecanum.h"
 #include <cstdlib>
 
@@ -35,8 +36,9 @@ int main(int argc, char **argv){
     
     while(ros::ok()){
         if(readPath(&des_x, &des_y, &des_theta, current_index))     break;
+        std::cout<<current_index<<" : \t";
         std::cout<<"("<<des_x<<"\t"<<des_y<<"\t"<<des_theta<<")\n";
-        std::cout<<current_index<<"\n";
+        ros::Duration(1.0).sleep(); // Sleep for 1 second
         if(current_index > numOfPoints)  break;
         if(des_x_last != des_x || des_y_last != des_y || des_theta_last != des_theta){
             while(!mecanum.if_reach && ros::ok()){
