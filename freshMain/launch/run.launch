@@ -1,0 +1,6 @@
+<launch>
+
+    <!-- <rosparam command="load" file="$(find freshMain)/params/points_array.yaml" /> -->
+    <node type="run" pkg="freshMain" name="run" output="screen" />
+
+</launch>
