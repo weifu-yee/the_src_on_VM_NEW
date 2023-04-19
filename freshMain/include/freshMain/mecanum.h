@@ -11,13 +11,17 @@
 #include <iomanip>
 
 #define allowance 10e-3
+#define NSS 30 //num_of_SoftStart
 class Mecanum{
 private:
     double maxLinearSpeed = 1;      //m/s
     double maxAngularSpeed = 0.5;     //rad/s
 public:
+    double softStart;
+    double limitLinearSpeed, limitAngularSpeed;
     Odometry odometry;
     Mecanum(){
+        softStart = 0;
         odometry.x = 0;
         odometry.y = 0;
         odometry.theta = 0;
@@ -32,11 +36,17 @@ public:
         diff_theta = (des_theta/180*PI) - odometry.theta;    
         while(std::abs(diff_theta) > PI)   diff_theta = (diff_theta > 0)?diff_theta - 2*PI:diff_theta + 2*PI;
         speed.angular.z = (std::abs(diff_theta) > allowance)?std::abs(speed_Kp) * diff_theta:0;
-        if(std::abs(speed.linear.x) > maxLinearSpeed)  speed.linear.x = (speed.linear.x > 0)?maxLinearSpeed:-1*maxLinearSpeed;
-        if(std::abs(speed.linear.y) > maxLinearSpeed)  speed.linear.y = (speed.linear.y > 0)?maxLinearSpeed:-1*maxLinearSpeed;
-        if(std::abs(speed.angular.z) > maxAngularSpeed)  speed.angular.z = (speed.angular.z > 0)?maxAngularSpeed:-1*maxAngularSpeed;
+
+        limitLinearSpeed = (softStart/maxLinearSpeed < NSS)?softStart/NSS:maxLinearSpeed;
+        limitAngularSpeed = (softStart/maxAngularSpeed < 2*NSS)?softStart/2/NSS:maxAngularSpeed;
+        
+        if(std::abs(speed.linear.x) > limitLinearSpeed)  speed.linear.x = (speed.linear.x > 0)?limitLinearSpeed:-1*limitLinearSpeed;
+        if(std::abs(speed.linear.y) > limitLinearSpeed)  speed.linear.y = (speed.linear.y > 0)?limitLinearSpeed:-1*limitLinearSpeed;
+        if(std::abs(speed.angular.z) > limitAngularSpeed)  speed.angular.z = (speed.angular.z > 0)?limitAngularSpeed:-1*limitAngularSpeed;
         if(std::abs(diff_x) <= allowance && std::abs(diff_y) <= allowance && std::abs(diff_theta) <= allowance)    if_reach = true;
         
+        std::cout<<softStart<<"\t";
+
         std::cout<<std::fixed<<std::setprecision(4);
         std::cout<<"des("<<des_x<<","<<des_y<<","<<des_theta<<")\t";
         std::cout<<"odo("<<odometry.x<<","<<odometry.y<<","<<odometry.theta*180/PI<<")\t";

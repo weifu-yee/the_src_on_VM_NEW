@@ -41,9 +41,17 @@ int main(int argc, char **argv){
         ros::Duration(1.0).sleep(); // Sleep for 1 second
         if(current_index > numOfPoints)  break;
         if(des_x_last != des_x || des_y_last != des_y || des_theta_last != des_theta){
+            mecanum.softStart = 0;
             while(!mecanum.if_reach && ros::ok()){
                 ros::spinOnce();
                 vel_pub.publish( mecanum.goTo(des_x, des_y, des_theta, speed_Kp) );
+                if(mecanum.softStart == 30){
+                    std::cout<<"\n";
+                    ros::Duration(1).sleep();
+
+                }
+                mecanum.softStart++;
+                ros::Duration(0.2).sleep();
             }
             mecanum.if_reach = false;
             std::cout<<"\n\t\tarrive the ("<<current_index<<" th) destanation!\n\n";
