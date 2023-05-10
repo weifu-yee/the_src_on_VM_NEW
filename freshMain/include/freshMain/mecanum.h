@@ -11,7 +11,7 @@
 #include <iomanip>
 
 #define allowance 10e-3
-#define NSS 30 //num_of_SoftStart
+#define NSS 10 //num_of_SoftStart
 class Mecanum{
 private:
     double maxLinearSpeed = 1;      //m/s
